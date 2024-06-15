@@ -101,14 +101,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     width: '88%',
-    marginBottom: 10,
-    paddingHorizontal: 10
+    marginBottom: 5,
+    paddingHorizontal: 5,
+    height: 50,
+    paddingVertical: 10
   },  
   icon: {
     // Chat Box text input field (icon param)
     width: 20,
     height: 20,
-    marginRight: 10
+    marginRight: 15
   },
   textInput: {
     // Chat Box text input field (text param)
