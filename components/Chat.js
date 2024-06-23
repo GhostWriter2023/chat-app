@@ -3,11 +3,12 @@ import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView from 'react-native-maps';
+import CustomActions from './CustomActions';
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
     const { userID, username, background } = route.params;
     const [messages, setMessages] = useState([]);
-
     const onSend = (newMessages) => {
       addDoc(collection(db, "messages"), newMessages[0]) //`addDoc(collection(db, "messages"), newMessages[0])` replaced `setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))`
     }
@@ -22,26 +23,25 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     useEffect(() => {
       if (isConnected === true) {
         // unregister current onSnapshot() listener to avoid registering multiple listeners when useEffect code is re-executed.
-        if (unsubMessages) unsubMessages();
-        unsubMessages = null;
-
-      navigation.setOptions({ title: username }); // set username at top of page
-      const q = query(collection(db, "messages"), orderBy("createdAt", "desc")); //`orderBy("createdAt", "desc")` replaced `where("uid", "==", userID)`
-      unsubMessages = onSnapshot(q, (docs) => { //replaced `documentsSnapshot` by `docs`
-        let newMessages = [];
-      docs.forEach(doc => {
-        newMessages.push({
-           id: doc.id,
-           ...doc.data(),
-           createdAt: new Date(doc.data().createdAt.toMillis())
-        });
-      });
+      if (unsubMessages) unsubMessages();
+      unsubMessages = null;
+        navigation.setOptions({ title: username }); // set username at top of page
+        const q = query(collection(db, "messages"), orderBy("createdAt", "desc")); //`orderBy("createdAt", "desc")` replaced `where("uid", "==", userID)`
+        unsubMessages = onSnapshot(q, (docs) => { //replaced `documentsSnapshot` by `docs`
+          let newMessages = [];
+          docs.forEach(doc => {
+            newMessages.push({
+              id: doc.id,
+              ...doc.data(),
+              createdAt: new Date(doc.data().createdAt.toMillis())
+            });
+          });
       cacheMessages(newMessages);
       setMessages(newMessages);
     });
-  } else {
-    loadCachedMessages();
-  }
+    } else {
+      loadCachedMessages();
+      }
 
     // Clean up code
     return () => {
@@ -76,20 +76,48 @@ const Chat = ({ route, navigation, db, isConnected }) => {
       }
     };
 
-    // Function that loadS cached messages from the local storage, when isConnected is FALSE
+    // Function that loads cached messages from the local storage, when isConnected is FALSE
     const loadCachedMessages = async () => {
       const cachedMessages = await AsyncStorage.getItem("messages") || [];
       setMessagess(JSON.parse(cachedMessages));
-    }
+    };
 
+    // Function for creating the “action” button to the left of the message composer (input field)
+    const renderCustomActions = (props) => {
+      return <CustomActions storage={storage} {...props} />;
+    };
 
- //UI displays selected backgroundColor & starts chat with GiftedChat
+    // Function sending location and rendering a map
+    const renderCustomView = (props) => {
+      const { currentMessage} = props;
+      if (currentMessage.location) {
+        return (
+            <MapView
+              style={{width: 150,
+                height: 100,
+                borderRadius: 13,
+                margin: 3}}
+              region={{
+                latitude: currentMessage.location.latitude,
+                longitude: currentMessage.location.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            />
+        );
+      }
+      return null;
+    };
+
+ //UI display (selected backgroundColor & starts chat with GiftedChat, Comms features)
  return (
    <View style={[styles.container, { backgroundColor: background }]}>
       <GiftedChat
         messages={messages}
         renderInputToolbar={renderInputToolbar}
         onSend={messages => onSend(messages)}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
         user={{
           _id: userID,
           name: username
