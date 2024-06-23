@@ -61,12 +61,65 @@ The following sections provide information about the requirements for the app.
 
 **Scenario 6:** User accesses the chat app using a screen reader, and all functionalities are accessible.
 
+## Technologies Used for this Project
+- JavaScript (ES2015+)
+- Node.js Modules
+- Express
+- Various middleware packages & Package Managers
+- React
+- React Native
+- React Native Project with Expo
+- Android Studio
+- Gifted Chat
+- Google Firebase
+- Cloud Firestore
+- HTML5 Web Storage API
+- ChatGPT
+
 ## Getting Started
-The application is accessible on the web at the following link:
-   TBP
 
 The application is accessible at GitHub at the following link:
    [https://github.com/GhostWriter2023/chat-app](https://github.com/GhostWriter2023/chat-app)
+
+### Setting Up the Development Environment
+
+1. **Clone/Download the Project:**
+   ```sh
+   git clone https://github.com/GhostWriter2023/chat-app.git
+   cd chat-app
+
+2. **Install Dependencies:**
+   Make sure you have Node.js installed. Then, run:
+   ```sh
+   npm install
+3. **Set Up Expo:**
+   If you haven't already, install the Expo CLI:
+   ```sh
+   npm install -g expo-cli
+
+4. **Install Android Studio:**
+   Follow the instructions to install Android Studio. Make sure you set up the Android SDK and Android Virtual Device (AVD).
+
+5. **Running the App:**
+   To start the development server, run:
+   ```sh
+   expo start
+### Database Configuration
+1. **Firebase Setup:**
+   - Go to Firebase Console.
+   - Create a new project.
+   - Set up Firestore Database.
+   - In your project settings, obtain the Firebase configuration and replace the configuration in App.js with your Firebase credentials.
+2. **Firestore Rules:**
+   Ensure your Firestore rules allow read and write access for authenticated users.
+
+### Necessary Libraries
+Make sure all necessary libraries and dependencies are installed:
+   - @react-navigation/native
+   - @react-navigation/native-stack
+   - expo
+   - expo-status-bar
+   - firebase react
 
 ## Author
 GhostWriter
